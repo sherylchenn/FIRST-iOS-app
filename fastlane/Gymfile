@@ -1,0 +1,3 @@
+scheme("The Blue Alliance")
+configuration("Release")
+silent(true)
