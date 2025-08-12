@@ -42,6 +42,10 @@ protocol Refreshable: AnyObject {
      */
     var isDataSourceEmpty: Bool { get }
 
+    /**
+     Method to refresh data. This method must be marked as @objc in the implementing class
+     to be compatible with UIRefreshControl selectors.
+     */
     func refresh()
 
     func updateRefresh()
@@ -185,7 +189,11 @@ extension Refreshable {
 
     func enableRefreshing() {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: Selector(("refresh")), for: .valueChanged)
+        // Use runtime to check if refresh method exists and can be used as selector
+        let selector = NSSelectorFromString("refresh")
+        if let nsObject = self as? NSObject, nsObject.responds(to: selector) {
+            refreshControl.addTarget(self, action: selector, for: .valueChanged)
+        }
 
         self.refreshControl = refreshControl
     }
